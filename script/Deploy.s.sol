@@ -1,18 +1,16 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.15;
 
-import {Script} from 'forge-std/Script.sol';
+import "forge-std/Script.sol";
+import "../src/Metaversity.sol";
 
-import {Greeter} from "src/Greeter.sol";
-
-/// @notice A very simple deployment script
-contract Deploy is Script {
-
-  /// @notice The main script entrypoint
-  /// @return greeter The deployed contract
-  function run() external returns (Greeter greeter) {
-    vm.startBroadcast();
-    greeter = new Greeter("GM");
-    vm.stopBroadcast();
-  }
+contract MyScript is Script {
+    function run() external {
+        string memory mnemonic = "test test test test test test test test test test test junk";
+        uint256 privateKey = vm.deriveKey(mnemonic, 0);
+        address deployer = vm.rememberKey(privateKey);
+        vm.startBroadcast(deployer);
+        Metaversity nft = new Metaversity("baseUri");
+        vm.stopBroadcast();
+    }
 }
