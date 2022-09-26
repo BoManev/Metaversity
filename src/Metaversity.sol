@@ -25,7 +25,7 @@ contract Metaversity is ERC721, Owned, ReentrancyGuard {
     /// @dev number of addresses in allow list
     uint256 private _currentGenesisCount;
     /// @dev start block for genesis
-    uint256 private genesisBlockStamp;
+    uint256 private _genesisBlockStamp;
 
     /// @dev total supply
     uint256 public constant TOTAL_SUPPLY = 1000;
@@ -48,8 +48,8 @@ contract Metaversity is ERC721, Owned, ReentrancyGuard {
     //////////////////////////////////////////////////////////////////////*/
 
     function mintGenesis() external payable nonReentrant {
-        require(isGenesisActive && _currentID > AIRDROP_SUPPLY, "Genesis mint is not active");
-        if (block.number - genesisBlockStamp <= GENESIS_DURATION_BLOCKS) {
+        require(isGenesisActive && _currentID >= AIRDROP_SUPPLY, "Genesis mint is not active");
+        if (block.number - _genesisBlockStamp <= GENESIS_DURATION_BLOCKS) {
             require(_genesisList[msg.sender], "Not eligible for Genesis");
             _genesisList[msg.sender] = false;
         }
@@ -77,8 +77,13 @@ contract Metaversity is ERC721, Owned, ReentrancyGuard {
         return bytes(baseTokenURI).length > 0 ? string(abi.encodePacked(baseTokenURI, tokenID.toString(), ".json")) : "";
     }
 
-    function genesisRemaining() external view returns (uint256) {
+    function genesisSupply() external view returns (uint256) {
         return GENESIS_SUPPLY - _currentID;
+    }
+    
+
+    function genesisBlocks() external view returns (uint256) {
+        return GENESIS_DURATION_BLOCKS - _genesisBlockStamp;
     }
 
     /*//////////////////////////////////////////////////////////////////////
@@ -116,7 +121,7 @@ contract Metaversity is ERC721, Owned, ReentrancyGuard {
     /// @dev records block number
     function startGenesis() external onlyOwner {
         isGenesisActive = true;
-        genesisBlockStamp = block.number;
+        _genesisBlockStamp = block.number;
     }
 
     function stopGenesis() external onlyOwner {
