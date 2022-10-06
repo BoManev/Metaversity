@@ -2,31 +2,27 @@
 pragma solidity ^0.8.15;
 
 import "forge-std/Script.sol";
-import "../src/Metaversity.sol";
+import "../src/MetaversityGenesis.sol";
 
-
-
+// create .env from .env.sample
+// orge script script/Deploy.s.sol:DeployScript --rpc-url $RPC_MAINNET --broadcast --verify -vvvv
 contract DeployScript is Script {
     function run() external {
-        string memory mnemonic = "test test test test test test test test test test test junk";
-        uint256 privateKey = vm.deriveKey(mnemonic, 0);
-        address deployer = vm.rememberKey(privateKey);
-        vm.startBroadcast(deployer);
-        Metaversity nft = new Metaversity("baseUri/");
-        nft.addToGenesis(allowlist);
-        nft.mintAirDrop();
-        nft.startGenesis();
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
+        MetaversityGenesis nft = new MetaversityGenesis("ipfs://QmTSwj3TW45mAkhsbZbwPSxKectfkUVSKRm34Xb7qzmLkn");
+        nft.airdrop(holders);
         vm.stopBroadcast();
     }
-    // remove 0th address
-    address[] allowlist = [
-      0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266,
-    0x7fDA1063aE5C79d54A61E41aA834d87142C4613E,
+
+    address[] holders = [
+    0x1e9b5E3b015d846D3523760dBbDA5e38E168cd07,
     0x43Ada6b154AFD7608cBE23a1cBf0E394500A5fD3,
     0x060B87eeefc701A9f035f6894FCefE2671083A14,
     0x1792C0b2b25e70E902b5D2C9DB92ca94eEfaa576,
     0x620C3fe9Ef792727587B09EbAce63305706f93dd,
     0xd4e61B4F6935524f727b69DE470567EEbF701E86,
+    0x7fDA1063aE5C79d54A61E41aA834d87142C4613E,
     0x4C208e45602C80a62BBD31bf6d2EB57E2cE64990,
     0xF6F15688Dc79CD8Ff2E1B4F60c42075CF2723D0c,
     0xC4C14E9A6c629c4c33E1a53b331C6F70EB628c50,
@@ -41,6 +37,7 @@ contract DeployScript is Script {
     0xeb53F824c94D9FF568f9FCf875ef62149bB8Cb10,
     0x5a4Fb04BC1590f65026E7bAfb12BF0100a8cA8Be,
     0x7f636703d8E7bbD5de47057Ec5cD19B91367Ec06,
+    0xA3ED4D917B7Fb106A9b185589f3B4A41F2C89423, 
     0x59795F019579005Ad4b8A0894D9CF7CfAf8d7053,
     0xd479EcE85aBC592020C8D5f22a1F2De6b05D6515,
     0x438b2b4053221FF10C107B5C7187C2a0F25d28CC,
@@ -92,6 +89,37 @@ contract DeployScript is Script {
     0x3EEB390c0Ad7037D35B7B99c114F1124256264Ac,
     0xbf946Cb3FD093a48175c88618841F87B40906d51,
     0x975fc78e698Adc5d60323A7eB630F1fC15fB66a1,
-    0xd5D8706EA604d9260FA4454Ae049d3D45c4bE6D9];
+    0xd5D8706EA604d9260FA4454Ae049d3D45c4bE6D9,
+    0xE79Ed735c4Bd5F9c0f9B24365420Ce30806d0d51,
+    0xC669076137C51a03F7EaA3Ed668302E27257E5e4,
+    0x218bEdDbe74e98f8D79041E2dFcF4033D4f72D79,
+    0xE2C5F97116FC9853383FbdDC2EAD7fAB83Bc4FEb,
+    0x78320Ad886DcbF3CAaF0509b37D61d1aA1607141,
+    0xb53a2F557822a398AC37d970089e5dC01CB82FFB,
+    0xC5A9E70756e1b4bDB254F74578b2EdDcc89a259C,
+    0x91D8A68A470223c17771bC8A7740769699D6934F,
+    0x0eC3209986F6D8fE6519ea9abF0B166BC422c943,
+    0x41e54704aCc2787B2B987b56111ca934AD3e3210,
+    0x4c207A8D31D521b5167E9c109AEEEE9F67Fd7851,
+    0x558bF82F3f83370da09c8e3E56099028ea1c1B38,
+    0xfc61259CCCD9Ef1214eB87839d4866b0d39C8a8F,
+    0xC1aB80F28F1F70f9f47FaD45Fe2834d3bd21d49d];
 }
 
+// Run Anvil
+// forge script script/Deploy.s.sol:DeployLocalScript --rpc-url http://localhost:8545 --broadcast
+contract DeployLocalScript is Script {
+    function run() external {
+        string memory mnemonic = "test test test test test test test test test test test junk";
+        uint256 privateKey = vm.deriveKey(mnemonic, 0);
+        address deployer = vm.rememberKey(privateKey);
+        vm.startBroadcast(deployer);
+
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
+        MetaversityGenesis nft = new MetaversityGenesis("ipfs://QmTSwj3TW45mAkhsbZbwPSxKectfkUVSKRm34Xb7qzmLkn");
+        nft.airdrop(holders);
+        vm.stopBroadcast();
+    }
+    address[] holders;
+}
